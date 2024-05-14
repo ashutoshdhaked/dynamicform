@@ -1,10 +1,20 @@
 import React, { useState } from "react";
+import DynamicForm from "./dynamicform";
 
 const App = () => {
   const [formFields, setFormFields] = useState([]);
+  const [show , setShow] = useState(false);
 
   const addField = (type) => {
-    let field = { type: type, label: "", value: "", options: [] , inputType: "text"};
+    let field = {
+      type: type,
+      label: "",
+      value: "",
+      options: [],
+      inputType: "",
+      tag: "",
+      required: false,
+    };
     if (type === "radio") {
       field.options = ["Option 1", "Option 2"];
     } else if (type === "checkbox" || type === "select") {
@@ -17,11 +27,11 @@ const App = () => {
   };
 
   const handleFieldChange = (index, event) => {
-    const { name, value, type, checked} = event.target;
+    const { name, value, type, checked } = event.target;
     setFormFields((prevFields) => {
       const updatedFields = [...prevFields];
       if (type === "checkbox") {
-        updatedFields[index] = { ...updatedFields[index], [name]: checked};
+        updatedFields[index] = { ...updatedFields[index], [name]: checked };
       } else {
         updatedFields[index] = { ...updatedFields[index], [name]: value };
       }
@@ -95,12 +105,6 @@ const App = () => {
           >
             Add Header Text
           </button>
-          <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
-            onClick={() => addField("logo")}
-          >
-            Add LOGO
-          </button>
         </div>
 
         {formFields.map((field, index) => (
@@ -114,17 +118,40 @@ const App = () => {
                 onChange={(e) => handleFieldChange(index, e)}
                 className="input mx-3 p-2 my-2"
               />
-               {field.type === "text" ? (
-               <>
-                 <select className="input px-4 py-2"  name='inputType' onChange={(e)=>{handleFieldChange(index,e)}} >
-                  <option value='text'>Text</option>
-                  <option value='email'>Email</option>
-                  <option value='password'>Password</option>
-                  <option value='number'>Number</option> 
-                 </select>
-               </>
+              {field.type === "text" ? (
+                <>
+                  <select
+                    className="input px-4 py-2"
+                    name="inputType"
+                    onChange={(e) => {
+                      handleFieldChange(index, e);
+                    }}
+                  >
+                    <option value="text">Text</option>
+                    <option value="email">Email</option>
+                    <option value="password">Password</option>
+                    <option value="number">Number</option>
+                  </select>
+                </>
               ) : null}
-
+              {field.type === "header" ? (
+                <>
+                  <select
+                    className="input px-4 py-2"
+                    name="tag"
+                    onChange={(e) => {
+                      handleFieldChange(index, e);
+                    }}
+                  >
+                    <option value="h1">h1</option>
+                    <option value="h2">h2</option>
+                    <option value="h3">h3</option>
+                    <option value="h4">h4</option>
+                    <option value="h5">h5</option>
+                    <option value="h6">h6</option>
+                  </select>
+                </>
+              ) : null}
               {field.type === "text" || field.type === "textarea" ? (
                 <textarea
                   name="value"
@@ -193,7 +220,6 @@ const App = () => {
             ) : (
               ""
             )}
-
             {field.type === "checkbox" ? (
               <>
                 {field.options.map((option, optionIndex) => (
@@ -266,7 +292,6 @@ const App = () => {
                 </button>
               </>
             ) : null}
-
             {field.type === "select" ? (
               <>
                 <select
@@ -340,22 +365,38 @@ const App = () => {
                 </button>
               </>
             ) : null}
-
             <button
               className="btn m-5 bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
               onClick={() => removeField(index)}
             >
               Remove Field
             </button>
+            {field.type !== "button" ||  field.type !== "header" ? (
+              <>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="required"
+                    id="check"
+                    checked={field.required}
+                    onChange={(e) => handleFieldChange(index, e)}
+                    className="checkbox mx-3 p-2 size-5"
+                  />
+                  <label htmlFor="check">Is Required</label>
+                </div>
+              </>
+            ) : null}
           </div>
         ))}
-
         <button
           className="btn m-5 bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
-          onClick={() => console.log(formFields)}
+          onClick={() => {setShow(true)}}
         >
           Submit
         </button>
+       {
+        show && (<div className="shadow-lg inline-block p-8 bg-slate-400"> <DynamicForm formData={formFields}/></div>)
+       } 
       </div>
     </div>
   );
