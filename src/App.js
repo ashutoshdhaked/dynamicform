@@ -3,7 +3,8 @@ import DynamicForm from "./dynamicform";
 
 const App = () => {
   const [formFields, setFormFields] = useState([]);
-  const [show , setShow] = useState(false);
+  const [show, setShow] = useState(false);
+  const [jsondisplayed, setJsonDisplayed] = useState(false);
 
   const addField = (type) => {
     let field = {
@@ -59,48 +60,65 @@ const App = () => {
     setFormFields((prevFields) => prevFields.filter((_, i) => i !== index));
   };
 
+  const moveElement = (action, index) => {
+    if (action === 'up' && index > 0) {
+      setFormFields((prevFields) => { 
+        const updatedFields = [...prevFields];
+        [updatedFields[index], updatedFields[index - 1]] = [updatedFields[index - 1], updatedFields[index]];
+        return updatedFields;
+      });
+    }
+    if (action === 'down' && index < formFields.length - 1) {
+      setFormFields((prevFields) => { 
+        const updatedFields = [...prevFields];
+        [updatedFields[index], updatedFields[index + 1]] = [updatedFields[index + 1], updatedFields[index]];
+        return updatedFields;
+      });
+    }
+  }
+  
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-8">
-        <div className="flex justify-between mb-4">
+    <div className="container">
+      <div className="space-y-8 mt-40 sm:mt-64 md:mt-52 lg:mt-40">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 bg-slate-200 px-2 py-4 fixed w-full top-0">
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("textarea")}
           >
             Add Textarea
           </button>
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("checkbox")}
           >
             Add Checkbox
           </button>
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("text")}
           >
             Add Text Field
           </button>
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("radio")}
           >
             Add Radio Button
           </button>
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("select")}
           >
             Add Select Dropdown
           </button>
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("button")}
           >
             Add Button
           </button>
           <button
-            className="btn bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+            className="btn bg-blue-950 text-white hover:bg-blue-800 px-4 py-2 rounded-md"
             onClick={() => addField("header")}
           >
             Add Header Text
@@ -365,39 +383,102 @@ const App = () => {
                 </button>
               </>
             ) : null}
+               <div className=" inline-flex items-center justify-center gap-5">
             <button
               className="btn m-5 bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
               onClick={() => removeField(index)}
             >
               Remove Field
             </button>
-            {field.type !== "button" ||  field.type !== "header" ? (
+               <button className="bg-blue-950 p-2 rounded-lg hover:bg-blue-800 ml-4" onClick={()=>{moveElement('down',index)}}>
+            <svg
+              class="w-6 h-6 text-white dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 1v12m0 0 4-4m-4 4L1 9"
+              />
+            </svg>
+            </button>
+            <button  className="bg-blue-950 p-2 rounded-lg hover:bg-blue-800 ml-4" onClick={()=>{moveElement('up',index)}}>
+            <svg
+              class="w-6 h-6 text-white dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13V1m0 0L1 5m4-4 4 4"
+              />
+            </svg>
+            </button>
+               </div>
+            
+            {field.type !== "button" || field.type !== "header" ? (
               <>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
                     name="required"
-                    id="check"
+                    id={index}
                     checked={field.required}
                     onChange={(e) => handleFieldChange(index, e)}
                     className="checkbox mx-3 p-2 size-5"
                   />
-                  <label htmlFor="check">Is Required</label>
+                  <label htmlFor={index}>Is Required</label>
                 </div>
               </>
             ) : null}
           </div>
         ))}
-        <button
-          className="btn m-5 bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
-          onClick={() => {setShow(true)}}
-        >
-          Submit
-        </button>
-       {
-        show && (<div className="shadow-lg inline-block p-8 bg-slate-400"> <DynamicForm formData={formFields}/></div>)
-       } 
+        {formFields.length > 0 && (
+          <>
+            <button
+              className="btn m-5 bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+              onClick={() => {
+                setShow(true);
+                setJsonDisplayed(false);
+              }}
+            >
+              Preview Form
+            </button>
+            <button
+              className="btn m-5 bg-blue-950 text-white border-2 border-white hover:bg-blue-800 px-4 py-2 rounded-md"
+              onClick={() => {
+                setShow(true);
+                setJsonDisplayed(true);
+              }}
+            >
+              Check JSON
+            </button>
+          </>
+        )}
       </div>
+      {show && (
+        <div className="shadow-lg inline-block px-4 bg-slate-200 fixed top-0 right-0 w-1/3 overflow-y-auto h-full">
+          {" "}
+          <DynamicForm
+            formData={formFields}
+            close={() => {
+              setShow(false);
+              setJsonDisplayed(false);
+            }}
+            displayJSON={jsondisplayed}
+          />
+        </div>
+      )}
     </div>
   );
 };

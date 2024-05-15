@@ -1,14 +1,20 @@
 import React from "react";
+import JsonDisplay from "./displayJSON";
 
-const DynamicForm = ({ formData }) => {
-  console.log("formdata is like as ; ", formData);
-
+const DynamicForm = ({ formData, close, displayJSON }) => {
   const renderField = (field, index) => {
+    let DynamicTag = field.tag;
+    if (DynamicTag === "") {
+      DynamicTag = "h1";
+    }
     switch (field.type) {
       case "textarea":
         return (
-          <>
-            <label>{field.label}</label>
+          <div className="my-2">
+            <label>
+              {field.label}
+              {field.required && <span className="ml-2 text-red-500">*</span>}
+            </label>
             <textarea
               key={index}
               placeholder={field.value}
@@ -17,12 +23,15 @@ const DynamicForm = ({ formData }) => {
               required={field.required}
               className="border rounded-md p-2 mt-2 w-full"
             />
-          </>
+          </div>
         );
       case "checkbox":
         return (
-          <>
-            <label>{field.label}</label>
+          <div className="my-2">
+            <label>
+              {field.label}
+              {field.required && <span className="ml-2 text-red-500">*</span>}
+            </label>
             <div key={index} className="mt-2">
               {field.options.map((option, i) => (
                 <label key={i} className="flex items-center">
@@ -35,22 +44,31 @@ const DynamicForm = ({ formData }) => {
                 </label>
               ))}
             </div>
-          </>
+          </div>
         );
       case "text":
         return (
-          <input
-            key={index}
-            type={field.inputType}
-            placeholder={field.value}
-            required={field.required}
-            className="border rounded-md p-2 mt-2 w-full"
-          />
+          <div className="my-2">
+            <label>
+              {field.label}
+              {field.required && <span className="ml-2 text-red-500">*</span>}
+            </label>
+            <input
+              key={index}
+              type={field.inputType}
+              placeholder={field.value}
+              required={field.required}
+              className="border rounded-md p-2 mt-2 w-full"
+            />
+          </div>
         );
       case "radio":
         return (
-          <>
-            <label>{field.label}</label>
+          <div className="my-2">
+            <label>
+              {field.label}
+              {field.required && <span className="ml-2 text-red-500">*</span>}
+            </label>
             <div key={index} className="mt-2">
               {field.options.map((option, i) => (
                 <label key={i} className="flex items-center m-2">
@@ -64,12 +82,15 @@ const DynamicForm = ({ formData }) => {
                 </label>
               ))}
             </div>
-          </>
+          </div>
         );
       case "select":
         return (
-          <>
-            <label>{field.label}</label>
+          <div className="my-2">
+            <label>
+              {field.label}
+              {field.required && <span className="ml-2 text-red-500">*</span>}
+            </label>
             <select
               key={index}
               required={field.required}
@@ -82,7 +103,7 @@ const DynamicForm = ({ formData }) => {
                 </option>
               ))}
             </select>
-          </>
+          </div>
         );
       case "button":
         return (
@@ -95,10 +116,10 @@ const DynamicForm = ({ formData }) => {
         );
       case "header":
         return (
-          <div className="text-center">
-            <h2 key={index} className="text-lg font-semibold mt-4">
+          <div className="text-center mb-8">
+            <DynamicTag key={index} className="">
               {field.label}
-            </h2>
+            </DynamicTag>
           </div>
         );
       default:
@@ -107,9 +128,27 @@ const DynamicForm = ({ formData }) => {
   };
 
   return (
-    <form className="max-w-lg mx-auto m-2">
-      {formData.map((field, index) => renderField(field, index))}
-    </form>
+    <>
+      <div className="text-right">
+        <button
+          onClick={close}
+          className="bg-zinc-800 text-white hover:bg-zinc-700 px-4 py-2 rounded-md mb-5 mt-5"
+        >
+          Close
+        </button>
+      </div>
+      {displayJSON ? (
+        <div>
+          <JsonDisplay jsonData={formData} />
+        </div>
+      ) : (
+        <div>
+          <form className="max-w-lg mx-auto my-10 ">
+            {formData.map((field, index) => renderField(field, index))}
+          </form>
+        </div>
+      )}
+    </>
   );
 };
 
